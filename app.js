@@ -9,8 +9,14 @@ const globalErrorHandler = require("./controllers/errorcontroller");
 const userroutes = require("./routes/userroutes");
 
 app.use(express.json());
-app.use(cors());
-
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://obedullah-ansari.github.io/NewsHub_OA_frontend/",
+    ],
+  })
+);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
