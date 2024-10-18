@@ -11,12 +11,15 @@ const userroutes = require("./routes/userroutes");
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://obedullah-ansari.github.io/NewsHub_OA_frontend/",
-    ],
+    origin: ["http://localhost:5173", "https://obedullah-ansari.github.io"],
+    methods: ["GET", "POST", "PUT", "DELETE"], // Define allowed methods
+    credentials: true, // If you're sending cookies or HTTP authentication
+    optionsSuccessStatus: 200, // Response status for preflight requests
   })
 );
+
+// Handle preflight requests for all routes
+app.options("*", cors()); 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
