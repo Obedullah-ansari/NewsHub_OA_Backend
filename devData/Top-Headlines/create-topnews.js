@@ -14,10 +14,7 @@ const DB = process.env.DATABASE.replace(
 
 const connectToDatabase = async () => {
   try {
-    await mongoose.connect(DB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(DB);
     console.log("Database is connected");
   } catch (error) {
     console.error("Error connecting to the database:", error);
