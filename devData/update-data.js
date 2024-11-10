@@ -42,7 +42,7 @@ const updateDataBase = async (newsType) => {
       const response = await request({
         uri: sources.url,
         headers: sources.headers,
-        gzip: false,
+        gzip: true,
       });
 
       const $ = cheerio.load(response);
