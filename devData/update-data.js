@@ -94,10 +94,10 @@ const updateDataBase = async (newsType) => {
 };
 
 const startCronJob = () => {
-  cron.schedule("0 */6 * * *", async () => {
-    console.log("Running scheduled job");
-    await updateDataBase();
-  });
+cron.schedule("*/5 * * * *", async () => {
+  console.log("Running scheduled job");
+  await updateDataBase();
+});
   console.log("Cron job scheduled");
 };
 
