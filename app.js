@@ -11,7 +11,7 @@ const userroutes = require("./routes/userroutes");
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://obedullah-ansari.github.io"],
+    origin: ["http://localhost:5173", "http://localhost:3000" ,"https://obedullah-ansari.github.io"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Define allowed methods
     credentials: true, // If you're sending cookies or HTTP authentication
     optionsSuccessStatus: 200, // Response status for preflight requests
