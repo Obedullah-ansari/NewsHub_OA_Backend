@@ -10,7 +10,7 @@ const Review = require("../models/reviewModal");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const defaultimage = require("../utils/file/user.png")
+
 
 // Multer configuration for image upload
 const storage = multer.diskStorage({
@@ -48,7 +48,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirmed: req.body.passwordConfirmed,
     passwordChangedAt: req.body.passwordChangedAt,
-    photo: req.file ? req.file.filename : defaultimage,
+    photo: req.file ? req.file.filename : "defualt.jpg",
   });
 
   const token = signToken(newUser._id);
