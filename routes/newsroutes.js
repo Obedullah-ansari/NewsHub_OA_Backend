@@ -5,8 +5,8 @@ const newsroutes = express.Router();
 
 
 newsroutes
-.route("/")
-.get(newscontroller.getAllHeadlines)
+.get("/", newscontroller.getAllHeadlines)
+.get("/search", newscontroller.searchHeadlines);
 
 newsroutes
 .route("/global/:id")
