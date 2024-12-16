@@ -83,33 +83,25 @@ exports.getTopHeadLines = catchAsync(async (req, res, next) => {
 });
 
 exports.searchHeadlines = catchAsync(async (req, res, next) => {
-  const { query } = req.query; // Extract the search query from request query
-
-  // Ensure a search query is provided
+  const { query } = req.query;
   if (!query) {
     return next(new AppError("Please provide a search query", 400));
   }
 
-  // Query the database to find headlines matching the search term
-  const results = await News.find(
-    {
-      $or: [
-        { HT: { $elemMatch: { headline: { $regex: query, $options: "i" } } } },
-        { TH: { $elemMatch: { headline: { $regex: query, $options: "i" } } } },
-        { TOI: { $elemMatch: { headline: { $regex: query, $options: "i" } } } },
-        { HTG: { $elemMatch: { headline: { $regex: query, $options: "i" } } } },
-        { THG: { $elemMatch: { headline: { $regex: query, $options: "i" } } } },
-        {
-          TOIG: { $elemMatch: { headline: { $regex: query, $options: "i" } } },
-        },
-      ],
-    },
-    { HT: 1, TH: 1, TOI: 1, HTG: 1, THG: 1, TOIG: 1, _id: 0 } // Projection to include only relevant fields
-  ).lean();
+  // Use substring regex to match partial inputs
+  const substringQuery = {
+    $or: [
+      { "HT.headline": { $regex: query, $options: "i" } },
+      { "TH.headline": { $regex: query, $options: "i" } },
+      { "TOI.headline": { $regex: query, $options: "i" } },
+      { "HTG.headline": { $regex: query, $options: "i" } },
+      { "THG.headline": { $regex: query, $options: "i" } },
+      { "TOIG.headline": { $regex: query, $options: "i" } },
+    ],
+  };
 
- 
+  const results = await News.find(substringQuery).lean();
 
-  // If no results are found, return an error response
   if (!results.length) {
     return res.status(404).json({
       status: "fail",
@@ -117,25 +109,10 @@ exports.searchHeadlines = catchAsync(async (req, res, next) => {
     });
   }
 
-  // Filter and clean the results to return only matching headlines
-  const filteredResults = [];
-  results.forEach((doc) => {
-    ["HT", "TH", "TOI", "HTG", "THG", "TOIG"].forEach((field) => {
-      if (doc[field]) {
-        doc[field].forEach((item) => {
-          if (new RegExp(query, "i").test(item.headline)) {
-            filteredResults.push({ field, ...item }); // Add the matching item with context
-          }
-        });
-      }
-    });
-  });
-  
-
-  // Send the filtered results back to the client
   res.status(200).json({
     status: "success",
-    results: filteredResults.length,
-    data: filteredResults,
+    results: results.length,
+    data: results,
   });
 });
+
