@@ -98,7 +98,7 @@ const main = async () => {
     await deleteData();
   }
 
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("0 */6 * * *", async () => {
     console.log("Running scheduled scrape and insert task...");
     await scrapeAndInsertTop();
   });
