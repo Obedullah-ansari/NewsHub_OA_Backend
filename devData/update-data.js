@@ -42,7 +42,6 @@ const updateDataBase = async (newsType) => {
       const response = await request({
         uri: sources.url,
         headers: sources.headers,
-        gzip: true,
         encoding: null,
       });
 
