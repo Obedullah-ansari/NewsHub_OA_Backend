@@ -84,24 +84,30 @@ exports.getTopHeadLines = catchAsync(async (req, res, next) => {
 
 exports.searchHeadlines = catchAsync(async (req, res, next) => {
   const { query } = req.query;
+
   if (!query) {
     return next(new AppError("Please provide a search query", 400));
   }
 
-  // Use substring regex to match partial inputs
-  const substringQuery = {
+  // Split the query into words for word-by-word matching
+  const words = query.split(" ").map((word) => word.trim());
+
+  // Create regex patterns for each word
+  const regexQueries = words.map((word) => ({
     $or: [
-      { "HT.headline": { $regex: query, $options: "i" } },
-      { "TH.headline": { $regex: query, $options: "i" } },
-      { "TOI.headline": { $regex: query, $options: "i" } },
-      { "HTG.headline": { $regex: query, $options: "i" } },
-      { "THG.headline": { $regex: query, $options: "i" } },
-      { "TOIG.headline": { $regex: query, $options: "i" } },
+      { "HT.headline": { $regex: word, $options: "i" } },
+      { "TH.headline": { $regex: word, $options: "i" } },
+      { "TOI.headline": { $regex: word, $options: "i" } },
+      { "HTG.headline": { $regex: word, $options: "i" } },
+      { "THG.headline": { $regex: word, $options: "i" } },
+      { "TOIG.headline": { $regex: word, $options: "i" } },
     ],
-  };
+  }));
 
-  const results = await News.find(substringQuery).lean();
+  // Fetch all headlines matching the regex queries for each word in the query
+  const results = await News.find({ $and: regexQueries }).lean();
 
+  // If no results are found
   if (!results.length) {
     return res.status(404).json({
       status: "fail",
@@ -109,10 +115,30 @@ exports.searchHeadlines = catchAsync(async (req, res, next) => {
     });
   }
 
+  // Filter and clean the results to return matching headlines
+  const filteredResults = [];
+  results.forEach((doc) => {
+    ["HT", "TH", "TOI", "HTG", "THG", "TOIG"].forEach((field) => {
+      if (doc[field]) {
+        doc[field].forEach((item) => {
+          // Check if the headline matches the full query or each word from query
+          const matchesAllWords = words.every((word) =>
+            new RegExp(word, "i").test(item.headline)
+          );
+
+          if (matchesAllWords) {
+            filteredResults.push({ field, ...item }); // Add the matching item with context
+          }
+        });
+      }
+    });
+  });
+
+  // Return filtered results with the count of matching items
   res.status(200).json({
     status: "success",
-    results: results.length,
-    data: results,
+    results: filteredResults.length,
+    data: filteredResults,
   });
 });
 
