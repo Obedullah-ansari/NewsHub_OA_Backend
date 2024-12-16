@@ -42,6 +42,7 @@ const updateDataBase = async (newsType) => {
       const response = await request({
         uri: sources.url,
         headers: sources.headers,
+         gzip: true,
         encoding: null,
       });
 
@@ -94,7 +95,7 @@ const updateDataBase = async (newsType) => {
 };
 
 const startCronJob = () => {
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("0 */6 * * *", async () => {
     console.log("Running scheduled job");
     await updateDataBase();
   });
