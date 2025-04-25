@@ -8,6 +8,7 @@ const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorcontroller");
 const userroutes = require("./routes/userroutes");
 const userImageRoutes = require("./routes/userimagesroutes")
+const tempRoutes = require("./routes/temp");
 
 app.use(express.json());
 app.use(
@@ -37,6 +38,8 @@ app.use("/api/v1/headlines", newsroutes);
 app.use("/api/v1/todo", todoroutes);
 app.use("/api/v1/auth", userroutes);
 app.use("/api/v1/image", userImageRoutes);
+
+app.use("/api/v1/temp", tempRoutes);
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
