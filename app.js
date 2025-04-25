@@ -14,7 +14,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
+      "https://feedbackform-one.vercel.app/",
+      "https://feedbackform-git-main-obedullah-ansaris-projects.vercel.app/",
       "https://headlines-bukoldbx9-obedullah-ansaris-projects.vercel.app",
       "https://headlines-hub-git-main-obedullah-ansaris-projects.vercel.app",
       "https://obedullah-ansari.github.io",
