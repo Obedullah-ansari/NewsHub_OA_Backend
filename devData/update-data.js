@@ -26,7 +26,6 @@ const connectToDatabase = async () => {
 // Function to update the database
 const updateDataBase = async (newsType) => {
   try {
- 
     const source = [
       {
         url: process.env.URL_HTG, // URL for The Hindu
@@ -42,30 +41,31 @@ const updateDataBase = async (newsType) => {
       const response = await request({
         uri: sources.url,
         headers: sources.headers,
-         gzip: true,
-        encoding: null,
+        gzip: true,
+        encoding: "utf8",
       });
 
       const $ = cheerio.load(response);
       const headlines = [];
-
       $("div.cartHolder.listView").each((index, element) => {
-        const headlineElement = $(element).find("h3.hdg3 > a");
+        const headlineElement = $(element).find("h2.hdg3 > a");
         const headline = headlineElement.text().trim();
-        let href = headlineElement.attr("href");
+
+        let href = headlineElement.attr("href") || "";
         if (href.startsWith("/")) {
           href = `${process.env.URL_HT}${href}`;
         }
 
-        const imageElement = $(element)
-          .closest(".cartHolder")
-          .find("figure img");
+        const imageElement = $(element).find("figure img");
         let imageUrl =
-          imageElement.attr("data-src") || imageElement.attr("src");
+          imageElement?.attr("data-src") || imageElement?.attr("src");
 
         if (!imageUrl) {
-          imageUrl="https://logowik.com/content/uploads/images/hindustan-times9271.jpg"
+          imageUrl =
+            "https://logowik.com/content/uploads/images/hindustan-times9271.jpg";
         }
+
+        // Push to result
         headlines.push({ headline, href, imageUrl });
       });
 
